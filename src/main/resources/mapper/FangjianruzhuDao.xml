@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.FangjianruzhuDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.fangjian_id as fangjianId
+        ,a.laoren_id as laorenId
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.FangjianruzhuView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,fangjian.fangjian_name as fangjianName
+        ,fangjian.fangjian_types as fangjianTypes
+        ,fangjian.fangjian_number as fangjianNumber
+        ,laoren.laoren_name as laorenName
+        ,laoren.sex_types as sexTypes
+        ,laoren.laoren_age as laorenAge
+        ,laoren.laoren_types as laorenTypes
+        ,laoren.jibing_types as jibingTypes
+        ,laoren.laoren_content as laorenContent
+
+        FROM fangjianruzhu  a
+        left JOIN fangjian fangjian ON a.fangjian_id = fangjian.id
+        left JOIN laoren laoren ON a.laoren_id = laoren.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.fangjianId != null and params.fangjianId != ''">
+                and (
+                    a.fangjian_id = #{params.fangjianId}
+                )
+            </if>
+            <if test="params.laorenId != null and params.laorenId != ''">
+                and (
+                    a.laoren_id = #{params.laorenId}
+                )
+            </if>
+
+                <!-- 判断房间信息的id不为空 -->
+            <if test=" params.fangjianIdNotNull != '' and params.fangjianIdNotNull != null and params.fangjianIdNotNull != 'null' ">
+                and a.fangjian_id IS NOT NULL
+            </if>
+            <if test=" params.fangjianName != '' and params.fangjianName != null and params.fangjianName != 'null' ">
+                and fangjian.fangjian_name like CONCAT('%',#{params.fangjianName},'%')
+            </if>
+            <if test="params.fangjianTypes != null  and params.fangjianTypes != ''">
+                and fangjian.fangjian_types = #{params.fangjianTypes}
+            </if>
+
+            <if test="params.fangjianNumberStart != null  and params.fangjianNumberStart != '' ">
+                <![CDATA[  and fangjian.fangjian_number >= #{params.fangjianNumberStart}   ]]>
+            </if>
+            <if test="params.fangjianNumberEnd != null  and params.fangjianNumberEnd != '' ">
+                <![CDATA[  and fangjian.fangjian_number <= #{params.fangjianNumberEnd}   ]]>
+            </if>
+            <if test="params.fangjianNumber != null  and params.fangjianNumber != '' ">
+                and fangjian.fangjian_number = #{params.fangjianNumber}
+            </if>
+                <!-- 判断老人信息预约的id不为空 -->
+            <if test=" params.laorenIdNotNull != '' and params.laorenIdNotNull != null and params.laorenIdNotNull != 'null' ">
+                and a.laoren_id IS NOT NULL
+            </if>
+            <if test=" params.laorenName != '' and params.laorenName != null and params.laorenName != 'null' ">
+                and laoren.laoren_name like CONCAT('%',#{params.laorenName},'%')
+            </if>
+            <if test="params.sexTypes != null  and params.sexTypes != ''">
+                and laoren.sex_types = #{params.sexTypes}
+            </if>
+
+            <if test="params.laorenAgeStart != null  and params.laorenAgeStart != '' ">
+                <![CDATA[  and laoren.laoren_age >= #{params.laorenAgeStart}   ]]>
+            </if>
+            <if test="params.laorenAgeEnd != null  and params.laorenAgeEnd != '' ">
+                <![CDATA[  and laoren.laoren_age <= #{params.laorenAgeEnd}   ]]>
+            </if>
+            <if test="params.laorenAge != null  and params.laorenAge != '' ">
+                and laoren.laoren_age = #{params.laorenAge}
+            </if>
+            <if test="params.laorenTypes != null  and params.laorenTypes != ''">
+                and laoren.laoren_types = #{params.laorenTypes}
+            </if>
+
+            <if test="params.jibingTypes != null  and params.jibingTypes != ''">
+                and laoren.jibing_types = #{params.jibingTypes}
+            </if>
+
+            <if test=" params.laorenContent != '' and params.laorenContent != null and params.laorenContent != 'null' ">
+                and laoren.laoren_content like CONCAT('%',#{params.laorenContent},'%')
+            </if>
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>

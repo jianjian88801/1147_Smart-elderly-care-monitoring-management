@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.HouqinrenyuanDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.username as username
+        ,a.password as password
+        ,a.houqinrenyuan_name as houqinrenyuanName
+        ,a.houqinrenyuan_photo as houqinrenyuanPhoto
+        ,a.houqinrenyuan_phone as houqinrenyuanPhone
+        ,a.houqinrenyuan_id_number as houqinrenyuanIdNumber
+        ,a.houqinrenyuan_email as houqinrenyuanEmail
+        ,a.sex_types as sexTypes
+        ,a.houqinrenyuan_delete as houqinrenyuanDelete
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.HouqinrenyuanView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM houqinrenyuan  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and a.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and a.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test=" params.houqinrenyuanName != '' and params.houqinrenyuanName != null and params.houqinrenyuanName != 'null' ">
+                and a.houqinrenyuan_name like CONCAT('%',#{params.houqinrenyuanName},'%')
+            </if>
+            <if test=" params.houqinrenyuanPhone != '' and params.houqinrenyuanPhone != null and params.houqinrenyuanPhone != 'null' ">
+                and a.houqinrenyuan_phone like CONCAT('%',#{params.houqinrenyuanPhone},'%')
+            </if>
+            <if test=" params.houqinrenyuanIdNumber != '' and params.houqinrenyuanIdNumber != null and params.houqinrenyuanIdNumber != 'null' ">
+                and a.houqinrenyuan_id_number like CONCAT('%',#{params.houqinrenyuanIdNumber},'%')
+            </if>
+            <if test=" params.houqinrenyuanEmail != '' and params.houqinrenyuanEmail != null and params.houqinrenyuanEmail != 'null' ">
+                and a.houqinrenyuan_email like CONCAT('%',#{params.houqinrenyuanEmail},'%')
+            </if>
+            <if test="params.sexTypes != null and params.sexTypes != ''">
+                and a.sex_types = #{params.sexTypes}
+            </if>
+            <if test="params.houqinrenyuanDeleteStart != null and params.houqinrenyuanDeleteStart != ''">
+                <![CDATA[  and a.houqinrenyuan_delete >= #{params.houqinrenyuanDeleteStart}   ]]>
+            </if>
+            <if test="params.houqinrenyuanDeleteEnd != null and params.houqinrenyuanDeleteEnd != ''">
+                <![CDATA[  and a.houqinrenyuan_delete <= #{params.houqinrenyuanDeleteEnd}   ]]>
+            </if>
+             <if test="params.houqinrenyuanDelete != null and params.houqinrenyuanDelete != ''">
+                and a.houqinrenyuan_delete = #{params.houqinrenyuanDelete}
+             </if>
+
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
